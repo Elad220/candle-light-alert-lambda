@@ -9,6 +9,7 @@ packages = [{include = "candle_lighting"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 requests = "^2.28.2"
+datetime = "^5.1"
 
 
 [build-system]

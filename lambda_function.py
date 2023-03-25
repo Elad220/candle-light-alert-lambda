@@ -1,45 +1,32 @@
 import os
 import requests
-import datetime
+from datetime import datetime
 import logging
+import json
 
 BOT_TOKEN = os.environ['BOT_TOKEN']
-BOT_CHATID = os.environ['BOT_CHATID']
-URL = 'https://www.hebcal.com/shabbat?cfg=json&geonameid=293397&M=on'
 
 logging.basicConfig(level=logging.INFO)
 
-def send_message(message):
-    url = f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage'
-    params = {'chat_id': BOT_CHATID, 'text': message}
-    response = requests.post(url, data=params)
-    response.raise_for_status()
-    return response.json()
-
-def get_candle_time():
-    try:
-        response = requests.get(URL)
+def send_message(message, chat_ids):
+    for chat_id in chat_ids:
+        url = f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage'
+        params = {'chat_id': chat_id, 'text': message}
+        response = requests.post(url, data=params)
         response.raise_for_status()
-        json_response = response.json()
-        for item in json_response['items']:
-            if item['category'] == 'candles':
-                candle_time = item['date']
-                break
-        candle_time = (candle_time.split('+')[0])
-        return datetime.datetime.strptime(candle_time, '%Y-%m-%dT%H:%M:%S').time()
-    except requests.exceptions.HTTPError as errh:
-        logging.error(f"HTTP Error: {errh}")
-    except requests.exceptions.ConnectionError as errc:
-        logging.error(f"Error Connecting: {errc}")
-    except requests.exceptions.Timeout as errt:
-        logging.error(f"Timeout Error: {errt}")
-    except requests.exceptions.RequestException as err:
-        logging.error(f"Something went wrong: {err}")
-    return None
+        logging.info(f"Message sent: {message} to chat_id: {chat_id}")
+
+def get_chatids():
+    chat_ids = os.environ['BOT_CHATID']
+    return json.loads(chat_ids)
+
 
 def lambda_handler(event, context):
-    candle_time = get_candle_time()
-    if candle_time:
-        send_message(f"The candle lighting time for today is {candle_time}.")
-    else:
-        logging.error("No candle lighting time found.")
+    candle_time = event["candle_time"]
+    mins = event["scheduled_for"]
+    candle_time = datetime.fromisoformat(candle_time)
+    message = f'Candle lighting time is in {mins} minutes at {candle_time.time()}'
+    logging.info(f"Message: {message}")
+    chat_ids = get_chatids()
+    send_message(message, chat_ids)
+
