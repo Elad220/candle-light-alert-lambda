@@ -29,4 +29,5 @@ def lambda_handler(event, context):
     logger.info(f"Message is: {message}")
     chat_ids = get_chatids()
     send_message(message, chat_ids)
+    return {"statusCode": 200, "body": "EventBridge rule created successfully!"}
 
