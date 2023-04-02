@@ -1,12 +1,12 @@
 import os
 import requests
 from datetime import datetime
-import logging
 import json
+from aws_lambda_powertools import Logger
 
 BOT_TOKEN = os.environ['BOT_TOKEN']
+logger = Logger()
 
-logging.basicConfig(level=logging.INFO)
 
 def send_message(message, chat_ids):
     for chat_id in chat_ids:
@@ -14,7 +14,7 @@ def send_message(message, chat_ids):
         params = {'chat_id': chat_id, 'text': message}
         response = requests.post(url, data=params)
         response.raise_for_status()
-        logging.info(f"Message sent: {message} to chat_id: {chat_id}")
+        logger.info(f"Message sent: {message} to chat_id: {chat_id}")
 
 def get_chatids():
     chat_ids = os.environ['BOT_CHATID']
@@ -26,7 +26,7 @@ def lambda_handler(event, context):
     mins = event["scheduled_for"]
     candle_time = datetime.fromisoformat(candle_time)
     message = f'Candle lighting time is in {mins} minutes at {candle_time.time()}'
-    logging.info(f"Message: {message}")
+    logger.info(f"Message is: {message}")
     chat_ids = get_chatids()
     send_message(message, chat_ids)
 
