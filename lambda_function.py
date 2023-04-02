@@ -25,7 +25,7 @@ def lambda_handler(event, context):
     candle_time = event["candle_time"]
     mins = event["scheduled_for"]
     candle_time = datetime.fromisoformat(candle_time)
-    message = f'Candle lighting time is in {mins} minutes at {candle_time.time()}'
+    message = f'Candle lighting time is in {mins} minutes at {candle_time.hour}:{candle_time.minute}'
     logger.info(f"Message is: {message}")
     chat_ids = get_chatids()
     send_message(message, chat_ids)
