@@ -18,6 +18,7 @@ def send_message(message, chat_ids):
 
 def get_chatids():
     chat_ids = os.environ['BOT_CHATID']
+    logger.info(f"chat_ids: {chat_ids}")
     return json.loads(chat_ids)
 
 
@@ -29,9 +30,11 @@ def lambda_handler(event, context):
     candle_time = datetime.fromisoformat(candle_time)
     message = f'Candle lighting time is in {mins} minutes at {candle_time.hour}:{candle_time.minute}'
     if test_flag:
+        logger.info("test_flag is True, sending a test message")
         message = " ".join([test_prefix, message])
     logger.info(f"Message is: {message}")
     chat_ids = get_chatids()
     send_message(message, chat_ids)
+    logger.info("Messages sent successfully!")
     return {"statusCode": 200, "body": "successfully sent reminder to all subscribers!"}
 
