@@ -24,8 +24,12 @@ def get_chatids():
 def lambda_handler(event, context):
     candle_time = event["candle_time"]
     mins = event["scheduled_for"]
+    test_flag = event.get("test", False)
     candle_time = datetime.fromisoformat(candle_time)
-    message = f'Candle lighting time is in {mins} minutes at {candle_time.hour}:{candle_time.minute}'
+    if test_flag:
+        message = f'This is a test message! Candle lighting time is in {mins} minutes at {candle_time.hour}:{candle_time.minute}'
+    else:
+        message = f'Candle lighting time is in {mins} minutes at {candle_time.hour}:{candle_time.minute}'
     logger.info(f"Message is: {message}")
     chat_ids = get_chatids()
     send_message(message, chat_ids)
