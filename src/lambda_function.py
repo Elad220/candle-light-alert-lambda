@@ -14,11 +14,11 @@ def send_message(message, chat_ids):
         params = {'chat_id': chat_id, 'text': message}
         response = requests.post(url, data=params)
         response.raise_for_status()
-        logger.info(f"Message sent: {message} to chat_id: {chat_id}")
+        logger.debug(f"Message sent: {message} to chat_id: {chat_id}")
 
 def get_chatids():
     chat_ids = os.environ['BOT_CHATID']
-    logger.info(f"chat_ids: {chat_ids}")
+    logger.debug(f"chat_ids: {chat_ids}")
     return json.loads(chat_ids)
 
 
@@ -30,7 +30,7 @@ def lambda_handler(event, context):
     candle_time = datetime.fromisoformat(candle_time)
     message = f'Candle lighting time is in {mins} minutes at {candle_time.hour}:{candle_time.minute}'
     if test_flag:
-        logger.info("test_flag is True, sending a test message")
+        logger.debug("test_flag is True, sending a test message")
         message = " ".join([test_prefix, message])
     logger.info(f"Message is: {message}")
     chat_ids = get_chatids()
