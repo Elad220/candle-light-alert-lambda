@@ -5,7 +5,7 @@ import json
 from aws_lambda_powertools import Logger
 
 BOT_TOKEN = os.environ['BOT_TOKEN']
-logger = Logger()
+logger = Logger(level="DEBUG")
 
 
 def send_message(message, chat_ids):
